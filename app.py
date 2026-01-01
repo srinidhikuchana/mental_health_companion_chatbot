@@ -1,12 +1,70 @@
 import streamlit as st
 import joblib
 import numpy as np
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #eaf3ff;
+    }
+
+    h1, h2, h3 {
+        color: #0b5ed7;
+        font-weight: 700;
+    }
+
+    .chat-bot {
+        background-color: #dbeafe;
+        padding: 10px 14px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        width: fit-content;
+        max-width: 80%;
+    }
+
+    .chat-user {
+        background-color: #0b5ed7;
+        color: white;
+        padding: 10px 14px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        margin-left: auto;
+        width: fit-content;
+        max-width: 80%;
+    }
+
+    .stButton>button {
+        background-color: #0b5ed7;
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 8px 16px;
+        font-weight: 600;
+    }
+
+    .stButton>button:hover {
+        background-color: #084298;
+        color: white;
+    }
+
+    input {
+        border-radius: 8px !important;
+        border: 2px solid #0b5ed7 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 model = joblib.load("mental_health_model.pkl")
 features = joblib.load("features.pkl")
 
 st.set_page_config(page_title="Mental Health Companion")
-st.title("Mental Health Companion Chatbot")
+st.markdown(
+    "<h1 style='color:#0b2c5f; font-weight:800;'>Mental Health Companion Chatbot</h1>",
+    unsafe_allow_html=True
+)
 
 st.write(
     "I will ask you a few questions to understand how you’re feeling.\n"
@@ -48,8 +106,17 @@ st.caption(f"Question {st.session_state.step + 1} of {len(features)}")
 
 
 for chat in st.session_state.chat_history:
-    role_icon = "Bot" if chat["role"] == "bot" else "You"
-    st.markdown(f"**{role_icon}:** {chat['message']}")
+    if chat["role"] == "bot":
+        st.markdown(
+            f"<div class='chat-bot'><b>Bot:</b> {chat['message']}</div>",
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            f"<div class='chat-user'><b>You:</b> {chat['message']}</div>",
+            unsafe_allow_html=True
+        )
+
 
 if st.session_state.step < len(features):
     feature = features[st.session_state.step]
@@ -100,7 +167,7 @@ else:
     if prediction == 0:
         st.success(
             "You seem emotionally stable.\n\n"
-            "💡 Maintain healthy sleep, balanced meals, and regular breaks."
+            "Maintain healthy sleep, balanced meals, and regular breaks."
         )
     else:
         st.warning(
