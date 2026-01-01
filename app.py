@@ -4,7 +4,7 @@ import joblib
 import numpy as np
 
 model = joblib.load("mental_health_model.pkl")
-features = joblib.load("features.pkl")  # ensures input order matches model
+features = joblib.load("features.pkl")
 
 st.set_page_config(page_title="Mental Health Companion Chatbot")
 st.title("Mental Health Companion Chatbot")
@@ -14,6 +14,13 @@ This AI-driven chatbot helps detect emotional distress and provides **supportive
 **Disclaimer:** This chatbot does not diagnose mental health conditions.
 """)
 st.header("Answer the following questions (1 = low, 5 = high)")
+
+user_data = []
+
+for feature in features:
+    value = st.slider(f"{feature.replace('_', ' ').title()}", 1, 5)
+    user_data.append(value)
+
 
 sleep = st.slider("How has your sleep been lately?", 1, 5)
 appetite = st.slider("How is your appetite?", 1, 5)
@@ -31,8 +38,7 @@ if st.button("Check My Emotional Well-being"):
     
 
     prediction = model.predict(user_input)[0]
-    
-    # Empathetic responses
+
     if prediction == 0:
         st.success("You seem emotionally stable. Keep taking care of yourself!")
         st.info("Tip: Maintain healthy sleep, balanced meals, and stay active.")
@@ -45,3 +51,4 @@ if st.button("Check My Emotional Well-being"):
         - Take short breaks and engage in a relaxing activity  
         - Maintain a routine and healthy sleep schedule
         """)
+
