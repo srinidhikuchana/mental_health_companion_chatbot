@@ -1,4 +1,3 @@
-
 import streamlit as st
 import joblib
 import numpy as np
@@ -6,49 +5,67 @@ import numpy as np
 model = joblib.load("mental_health_model.pkl")
 features = joblib.load("features.pkl")
 
-st.set_page_config(page_title="Mental Health Companion Chatbot")
+st.set_page_config(page_title="Mental Health Companion")
 st.title("Mental Health Companion Chatbot")
-st.write("""
-Students often face stress, anxiety, and loneliness but hesitate to approach professional counselors.  
-This AI-driven chatbot helps detect emotional distress and provides **supportive responses and relaxation tips**.  
-**Disclaimer:** This chatbot does not diagnose mental health conditions.
-""")
-st.header("Answer the following questions (1 = low, 5 = high)")
 
-user_data = []
+st.write(
+    "I will ask you a few questions to understand how you’re feeling.\n"
+    "**Answer on a scale of 1 to 5** (1 = very low, 5 = very high).\n\n"
+    "*This is not a medical diagnosis.*"
+)
 
-for feature in features:
-    value = st.slider(f"{feature.replace('_', ' ').title()}", 1, 5)
-    user_data.append(value)
+if "step" not in st.session_state:
+    st.session_state.step = 0
+    st.session_state.answers = []
 
+questions = {
+    "sleep": "How has your sleep been recently?",
+    "appetite": "How is your appetite?",
+    "interest": "Do you feel interested in daily activities?",
+    "fatigue": "Do you feel tired most of the day?",
+    "worthlessness": "Do you feel worthless or guilty?",
+    "concentration": "Are you able to concentrate properly?",
+    "agitation": "Do you feel restless or agitated?",
+    "suicidal_ideation": "Do you experience harmful thoughts?",
+    "sleep_disturbance": "Do you wake up frequently at night?",
+    "aggression": "Do you feel irritable or angry?",
+    "panic_attacks": "Do you experience panic or anxiety?",
+    "hopelessness": "Do you feel hopeless about the future?",
+    "restlessness": "Do you find it hard to stay calm?",
+    "low_energy": "Do you feel low energy most of the time?"
+}
+if st.session_state.step < len(features):
+    feature = features[st.session_state.step]
+    st.write(f"**Bot:** {questions[feature]}")
 
-sleep = st.slider("How has your sleep been lately?", 1, 5)
-appetite = st.slider("How is your appetite?", 1, 5)
-interest = st.slider("Are you interested in daily activities?", 1, 5)
-fatigue = st.slider("How tired do you feel during the day?", 1, 5)
-concentration = st.slider("How well can you concentrate?", 1, 5)
-low_energy = st.slider("Do you feel low energy most of the time?", 1, 5)
-hopelessness = st.slider("Do you feel hopeless at times?", 1, 5)
-panic_attacks = st.slider("Do you experience panic or anxiety?", 1, 5)
+    user_input = st.text_input("Your answer (1-5):", key=feature)
 
+    if st.button("Next"):
+        if user_input.isdigit() and 1 <= int(user_input) <= 5:
+            st.session_state.answers.append(int(user_input))
+            st.session_state.step += 1
+            st.experimental_rerun()
+        else:
+            st.warning("Please enter a number between 1 and 5.")
 
-if st.button("Check My Emotional Well-being"):
+else:
+    user_array = np.array([st.session_state.answers])
+    prediction = model.predict(user_array)[0]
 
-    user_input = np.array([[sleep, appetite, interest, fatigue, concentration, low_energy, hopelessness, panic_attacks]])
-    
-
-    prediction = model.predict(user_input)[0]
+    st.subheader("Chatbot Response")
 
     if prediction == 0:
-        st.success("You seem emotionally stable. Keep taking care of yourself!")
-        st.info("Tip: Maintain healthy sleep, balanced meals, and stay active.")
+        st.success("You seem emotionally stable. Keep taking care of yourself.")
+        st.write("Tip: Maintain good sleep, balanced meals, and regular breaks.")
     else:
-        st.warning("You may be experiencing emotional distress. You're not alone.")
-        st.info("""
-        Here are some tips that may help:  
-        - Talk to a trusted friend, family member, or counselor  
-        - Try deep breathing or mindfulness exercises  
-        - Take short breaks and engage in a relaxing activity  
-        - Maintain a routine and healthy sleep schedule
-        """)
+        st.warning("💙 You may be experiencing emotional distress.")
+        st.write(
+            "You are not alone.\n\n"
+            "Try slow breathing, journaling, or talking to someone you trust.\n"
+            "If these feelings persist, please consider professional support."
+        )
 
+    if st.button("Restart Chat"):
+        st.session_state.step = 0
+        st.session_state.answers = []
+        st.experimental_rerun()
