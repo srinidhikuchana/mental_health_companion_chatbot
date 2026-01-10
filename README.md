@@ -72,7 +72,7 @@ streamlit run app.py
 
 
 The app will open automatically in your browser.
-
+https://mentalhealthcompanionchatbot.streamlit.app/
 ## How It Works
 
 User enters mental health indicators through the Streamlit UI
