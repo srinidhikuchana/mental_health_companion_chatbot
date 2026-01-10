@@ -45,13 +45,14 @@ Development: Jupyter Notebook / Google Colab
 # Project Structure
 mental_health_companion_chatbot/
 │
-├── mental_health.csv          # Dataset
-├── model_training.ipynb       # Model training notebook
-├── mental_health_model.pkl    # Trained model
-├── features.pkl               # Feature list
-├── app.py                     # Streamlit app
-├── README.md                  # Documentation
-├── requirements.txt           # Dependencies
+├── mental_health.csv          
+├── model_training.ipynb       
+├── mental_health_model.pkl    
+├── features.pkl               
+├── app.py                     
+├── README.md                  
+├── requirements.txt           
+
 
 # How to Download & Run
 1.  Download the Project
